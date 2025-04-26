@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <!-- 糖尿病专用组件 -->
+    <script>
+      AFRAME.registerComponent('food-selector', {
+        init: function() {
+          let el = this.el;
+          // 食物选择交互
+          el.addEventListener('click', () => {
+            let giValue = el.getAttribute('data-gi');
+            let infoPanel = document.querySelector('#info-panel');
+            // 更新信息面板
+            infoPanel.setAttribute('text', {
+              value: `升糖指数: ${giValue}\n推荐量: ${giValue < 55 ? '安全' : '谨慎食用'}`,
+              color: giValue < 55 ? '#00FF00' : '#FF0000'
+            });
+            // 血糖波动模拟
+            let bloodSugar = document.querySelector('#blood-sugar');
+            bloodSugar.setAttribute('animation', {
+              property: 'rotation',
+              to: giValue < 55 ? '0 0 0' : '0 0 45',
+              dur: 2000
+            });
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- 虚拟超市环境 -->
+      <a-sky color="#87CEEB"></a-sky>
+
+      <!-- 商品货架 -->
+      <a-entity position="-3 1.5 -4">
+        <!-- 健康食品 -->
+        <a-box position="-1 0 0" color="#4CAF50" data-gi="30" food-selector
+               animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
+          <a-text value="全麦面包" position="0 0.6 0" align="center"></a-text>
+        </a-box>
+        
+        <!-- 危险食品 -->
+        <a-box position="1 0 0" color="#FF5722" data-gi="85" food-selector
+               animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
+          <a-text value="奶油蛋糕" position="0 0.6 0" align="center"></a-text>
+        </a-box>
+      </a-entity>
+
+      <!-- 血糖监测仪表 -->
+      <a-entity id="blood-sugar" position="0 2 -3">
+        <a-circle radius="0.5" color="#333333">
+          <a-text value="7.8mmol/L" position="0 0.1 0" color="#FFFFFF" align="center"></a-text>
+        </a-circle>
+        <a-entity position="0 0 0.1">
+          <a-triangle id="indicator" color="#FF0000" rotation="0 0 0"></a-triangle>
+        </a-entity>
+      </a-entity>
+
+      <!-- 信息展示面板 -->
+      <a-plane id="info-panel" position="3 1.5 -4" width="2" height="1" color="#FFFFFF">
+        <a-text position="0 0 0.1" width="5" value="点击食品查看详细信息" 
+               color="#000000" align="center"></a-text>
+      </a-plane>
+
+      <!-- 导航提示 -->
+      <a-entity position="0 0 -4">
+        <a-text value="← 请选择食物 →" color="#000000" scale="2 2 2"
+               animation="property: color; dir: alternate; dur: 2000; 
+                          from: #000000; to: #FFA500; loop: true"></a-text>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
